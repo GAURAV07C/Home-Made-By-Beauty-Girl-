@@ -1,9 +1,7 @@
 import { IngredientCard } from "@/components/IngredientCard";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
 import { BrandLogo } from "@/components/BrandLogo";
 import { motion, useScroll, useTransform } from "framer-motion";
-import dynamic from "next/dynamic";
+import Image from "next/image";
 import { 
   ShoppingCart, 
   Star, 
@@ -17,11 +15,6 @@ import {
 } from "lucide-react";
 import { SiAmazon, SiFlipkart } from "react-icons/si";
 import { useRef } from "react";
-
-const ProductScene = dynamic(
-  () => import("@/components/ProductScene").then((mod) => mod.ProductScene),
-  { ssr: false },
-);
 
 export default function Home() {
   const heroRef = useRef<HTMLElement>(null);
@@ -85,14 +78,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <Navigation />
-
       {/* Hero Section */}
       <motion.section 
         ref={heroRef}
         id="hero"
         style={{ opacity: heroOpacity, scale: heroScale }}
-        className="relative min-h-screen flex flex-col lg:flex-row items-center pt-20 sm:pt-24 lg:pt-0 overflow-hidden"
+        className="relative min-h-screen flex flex-col lg:flex-row items-center overflow-hidden"
       >
         {/* Animated background */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -293,9 +284,17 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* 3D Scene */}
+        {/* Product Visual */}
         <div className="relative w-full lg:w-1/2 h-[45vh] sm:h-[55vh] lg:h-screen order-1 lg:order-2">
-          <ProductScene />
+          <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-2xl shadow-black/10">
+            <Image
+              src="/soappage.png"
+              alt="Model holding Home Made by Beauty Girl soap"
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
           
           {/* Background text */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none opacity-[0.015]">
@@ -621,8 +620,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 }

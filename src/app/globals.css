@@ -25,7 +25,7 @@
 
   /* Muted: Soft Natural Stone */
   --muted: 40 25% 88%;
-  --muted-foreground: 145 20% 38%;
+  --muted-foreground: 145 20% 30%;
 
   /* Accent: Vibrant Turmeric Golden */
   --accent: 40 100% 50%;
@@ -98,7 +98,7 @@
   --secondary-foreground: 42 45% 92%;
 
   --muted: 145 20% 16%;
-  --muted-foreground: 42 25% 58%;
+  --muted-foreground: 42 25% 64%;
 
   --accent: 40 95% 48%;
   --accent-foreground: 145 30% 5%;
@@ -140,13 +140,13 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased text-[15px] sm:text-base leading-relaxed;
     font-family: var(--font-body);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-normal;
   }
 }
 

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { SiteNavigation } from "@/components/SiteNavigation";
+import { SiteFooter } from "@/components/SiteFooter";
+import { GlobalFaqAccordion } from "@/components/GlobalFaqAccordion";
 
 export const metadata: Metadata = {
   title: "Glow Soap",
@@ -13,7 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <SiteNavigation />
+        <main className="pt-16 sm:pt-20">{children}</main>
+        <GlobalFaqAccordion />
+        <SiteFooter />
+      </body>
     </html>
   );
 }

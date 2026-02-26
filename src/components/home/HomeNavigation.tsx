@@ -14,9 +14,9 @@ const navItems = [
 export function HomeNavigation() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/50 bg-white/85 backdrop-blur-xl">
-      <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" aria-label="Home Made by Beauty Girl home">
-          <BrandLogo variant="full" />
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
+        <Link href="/" aria-label="Home Made by Beauty Girl home" className="shrink-0">
+          <BrandLogo variant="full" className="origin-left" />
         </Link>
 
         <nav className="hidden items-center gap-8 lg:flex">
