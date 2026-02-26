@@ -58,9 +58,27 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         }
       };
 
+      const parseFaq = (value: FormDataEntryValue | null) => {
+        const raw = String(value || "").trim();
+        if (!raw) return [];
+        try {
+          const parsed = JSON.parse(raw);
+          if (!Array.isArray(parsed)) return [];
+          return parsed
+            .map((item) => ({
+              question: String((item as { question?: unknown })?.question || "").trim(),
+              answer: String((item as { answer?: unknown })?.answer || "").trim(),
+            }))
+            .filter((item) => item.question && item.answer);
+        } catch {
+          return [];
+        }
+      };
+
       payload.galleryImages = parseList(form.get("galleryImages"));
       payload.ingredients = parseList(form.get("ingredients"));
       payload.benefits = parseList(form.get("benefits"));
+      payload.faqs = parseFaq(form.get("faqs"));
 
       if (imageFile && imageFile instanceof File) {
         const ext = path.extname(imageFile.name || ".png").toLowerCase() || ".png";
@@ -115,6 +133,14 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         : [];
       payload.benefits = Array.isArray(body.benefits)
         ? body.benefits.map((item: unknown) => String(item || "").trim()).filter(Boolean)
+        : [];
+      payload.faqs = Array.isArray(body.faqs)
+        ? body.faqs
+            .map((item: unknown) => ({
+              question: String((item as { question?: unknown })?.question || "").trim(),
+              answer: String((item as { answer?: unknown })?.answer || "").trim(),
+            }))
+            .filter((item: { question: string; answer: string }) => item.question && item.answer)
         : [];
       payload.stock = Number.isFinite(Number(body.stock)) ? Number(body.stock) : 0;
       payload.category = String(body.category || "").trim();

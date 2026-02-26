@@ -45,6 +45,7 @@ export async function ensureProductsTable() {
       gallery_images jsonb NOT NULL DEFAULT '[]'::jsonb,
       ingredients jsonb NOT NULL DEFAULT '[]'::jsonb,
       benefits jsonb NOT NULL DEFAULT '[]'::jsonb,
+      faqs jsonb NOT NULL DEFAULT '[]'::jsonb,
       stock integer NOT NULL DEFAULT 0,
       category text NOT NULL DEFAULT '',
       is_featured boolean NOT NULL DEFAULT false,
@@ -115,6 +116,7 @@ export async function ensureProductsTable() {
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS gallery_images jsonb NOT NULL DEFAULT '[]'::jsonb;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS ingredients jsonb NOT NULL DEFAULT '[]'::jsonb;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS benefits jsonb NOT NULL DEFAULT '[]'::jsonb;`);
+  await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS faqs jsonb NOT NULL DEFAULT '[]'::jsonb;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS stock integer NOT NULL DEFAULT 0;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS category text NOT NULL DEFAULT '';`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS is_featured boolean NOT NULL DEFAULT false;`);

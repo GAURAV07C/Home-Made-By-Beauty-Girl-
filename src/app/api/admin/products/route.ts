@@ -35,6 +35,24 @@ function parseListField(value: FormDataEntryValue | null): string[] {
     .filter(Boolean);
 }
 
+function parseFaqField(value: FormDataEntryValue | null): { question: string; answer: string }[] {
+  if (!value) return [];
+  const raw = String(value).trim();
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map((item) => ({
+        question: String((item as { question?: unknown })?.question || "").trim(),
+        answer: String((item as { answer?: unknown })?.answer || "").trim(),
+      }))
+      .filter((item) => item.question && item.answer);
+  } catch {
+    return [];
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const form = await request.formData();
@@ -52,6 +70,7 @@ export async function POST(request: Request) {
     const isFeatured = String(form.get("isFeatured") || "false") === "true";
     const ingredients = parseListField(form.get("ingredients"));
     const benefits = parseListField(form.get("benefits"));
+    const faqs = parseFaqField(form.get("faqs"));
     const galleryImages = parseListField(form.get("galleryImages"));
     const buyLink = String(form.get("buyLink") || "").trim();
     const amazonLink = String(form.get("amazonLink") || "").trim();
@@ -100,6 +119,7 @@ export async function POST(request: Request) {
       galleryImages,
       ingredients,
       benefits,
+      faqs,
       stock: Number.isFinite(stock) ? stock : 0,
       category,
       isFeatured,

@@ -16,6 +16,7 @@ export interface AdminProductFormValues {
   isFeatured: boolean;
   ingredients: string;
   benefits: string;
+  faqs: string;
   galleryImages: string;
   buyLink: string;
   amazonLink: string;
@@ -39,6 +40,8 @@ export const emptyAdminProductForm: AdminProductFormValues = {
   isFeatured: false,
   ingredients: "Vitamin C\nNiacinamide\nHyaluronic Acid\nBotanical Extract Blend",
   benefits: "Deep cleansing without drying your skin\nInstant brightness and natural radiance\nSoft, supple skin texture from first use\nNatural, soothing fragrance",
+  faqs:
+    "Is this product suitable for daily use?\nYes, this formula is designed for gentle daily skincare.\n\nCan I use it with active ingredients?\nYes, you can pair it with serums and moisturizer.\n\nHow soon can I expect visible results?\nMost users notice smoother and brighter skin within 1-2 weeks.",
   galleryImages: "",
   buyLink: "",
   amazonLink: "",
@@ -183,6 +186,17 @@ export function ProductForm({ mode, initialValues, loading = false, onSubmit, su
             rows={4}
             value={values.benefits}
             onChange={(e) => setValues((s) => ({ ...s, benefits: e.target.value }))}
+            className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground focus:border-primary/40 focus:outline-none"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-semibold text-foreground">FAQs (blank line between each FAQ)</span>
+          <textarea
+            rows={8}
+            value={values.faqs}
+            onChange={(e) => setValues((s) => ({ ...s, faqs: e.target.value }))}
+            placeholder={"Question line\nAnswer line(s)\n\nQuestion line\nAnswer line(s)"}
             className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground focus:border-primary/40 focus:outline-none"
           />
         </label>

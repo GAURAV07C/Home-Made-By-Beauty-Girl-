@@ -37,6 +37,7 @@ export default async function DynamicProductPage({ params }: { params: { slug: s
         galleryImages: product.galleryImages,
         ingredients: product.ingredients,
         benefits: product.benefits,
+        faqs: product.faqs,
         buyLink: product.buyLink,
         amazonLink: product.amazonLink,
         flipkartLink: product.flipkartLink,

@@ -16,6 +16,7 @@ import {
 import { SiAmazon, SiFlipkart } from "react-icons/si";
 import { IngredientCard } from "@/components/IngredientCard";
 import { BrandLogo } from "@/components/BrandLogo";
+import type { FaqItem } from "@/lib/default-faqs";
 
 export interface ProductTemplateData {
   name: string;
@@ -30,6 +31,7 @@ export interface ProductTemplateData {
   galleryImages?: string[];
   ingredients?: string[];
   benefits?: string[];
+  faqs?: FaqItem[];
   buyLink?: string;
   amazonLink?: string;
   flipkartLink?: string;

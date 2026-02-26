@@ -19,6 +19,7 @@ export const products = pgTable("products", {
   galleryImages: jsonb("gallery_images").$type<string[]>().notNull().default([]),
   ingredients: jsonb("ingredients").$type<string[]>().notNull().default([]),
   benefits: jsonb("benefits").$type<string[]>().notNull().default([]),
+  faqs: jsonb("faqs").$type<{ question: string; answer: string }[]>().notNull().default([]),
   stock: integer("stock").notNull().default(0),
   category: text("category").notNull().default(""),
   isFeatured: boolean("is_featured").notNull().default(false),

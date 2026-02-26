@@ -12,6 +12,20 @@ function linesToArray(value: string) {
     .filter(Boolean);
 }
 
+function parseFaqBlocks(value: string) {
+  return value
+    .split(/\r?\n\s*\r?\n/g)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => {
+      const lines = block.split(/\r?\n/g).map((line) => line.trim()).filter(Boolean);
+      const question = lines[0] || "";
+      const answer = lines.slice(1).join(" ");
+      return { question, answer };
+    })
+    .filter((item) => item.question && item.answer);
+}
+
 export default function AdminCreateProductPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -44,6 +58,7 @@ export default function AdminCreateProductPage() {
       formData.set("isFeatured", String(values.isFeatured));
       formData.set("ingredients", JSON.stringify(linesToArray(values.ingredients)));
       formData.set("benefits", JSON.stringify(linesToArray(values.benefits)));
+      formData.set("faqs", JSON.stringify(parseFaqBlocks(values.faqs)));
       formData.set("galleryImages", JSON.stringify(linesToArray(values.galleryImages)));
       formData.set("buyLink", values.buyLink);
       formData.set("amazonLink", values.amazonLink);

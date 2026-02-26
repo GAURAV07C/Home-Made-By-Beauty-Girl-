@@ -2,6 +2,7 @@ import { and, desc, eq, ne } from "drizzle-orm";
 import { db, ensureProductsTable } from "@/db";
 import { products, type NewProductRow, type ProductRow } from "@/db/schema";
 import type { HomeCardProduct } from "@/lib/product-types";
+import type { FaqItem } from "@/lib/default-faqs";
 
 export interface ProductDetailData {
   id: string;
@@ -18,6 +19,7 @@ export interface ProductDetailData {
   galleryImages: string[];
   ingredients: string[];
   benefits: string[];
+  faqs: FaqItem[];
   stock: number;
   category: string;
   isFeatured: boolean;
@@ -43,6 +45,7 @@ export interface ProductCreateInput {
   galleryImages?: string[];
   ingredients?: string[];
   benefits?: string[];
+  faqs?: FaqItem[];
   stock?: number;
   category?: string;
   isFeatured?: boolean;
@@ -58,25 +61,12 @@ export const staticSoapCard: HomeCardProduct = {
   title: "Glow Soap",
   description: "Our active signature cleanser for daily glow, smooth texture, and gentle skin comfort.",
   category: "soap",
-  price: "Rs. 499",
+  price: "Rs. 120",
   imageSrc: "/soap.png",
   imageAlt: "Glow Soap product image",
   buyHref: "/soap#buy",
   detailsHref: "/soap",
   isStaticSoap: true,
-};
-
-export const comingSoonCard: HomeCardProduct = {
-  id: "coming-soon",
-  slug: "coming-soon",
-  title: "Cream / Serum",
-  description: "Next premium skincare category launching soon with the same glow-first quality.",
-  category: "coming-soon",
-  imageSrc: "/soap.png",
-  imageAlt: "Coming soon skincare products",
-  buyHref: "#",
-  detailsHref: "#",
-  isComingSoon: true,
 };
 
 function slugify(input: string) {
@@ -96,6 +86,19 @@ function toStringArray(value: unknown): string[] {
   return value.map((item) => String(item || "").trim()).filter(Boolean);
 }
 
+function toFaqArray(value: unknown): FaqItem[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => {
+      if (!item || typeof item !== "object") return null;
+      const question = String((item as { question?: unknown }).question || "").trim();
+      const answer = String((item as { answer?: unknown }).answer || "").trim();
+      if (!question || !answer) return null;
+      return { question, answer };
+    })
+    .filter(Boolean) as FaqItem[];
+}
+
 function mapRowToDetail(row: ProductRow): ProductDetailData {
   return {
     id: row.id,
@@ -112,6 +115,7 @@ function mapRowToDetail(row: ProductRow): ProductDetailData {
     galleryImages: toStringArray(row.galleryImages),
     ingredients: toStringArray(row.ingredients),
     benefits: toStringArray(row.benefits),
+    faqs: toFaqArray(row.faqs),
     stock: row.stock,
     category: row.category,
     isFeatured: row.isFeatured,
@@ -171,7 +175,7 @@ export async function listDynamicProductCards(): Promise<HomeCardProduct[]> {
 
 export async function listAllCardsForHome(): Promise<HomeCardProduct[]> {
   const dynamicCards = await listDynamicProductCards();
-  return dynamicCards.length > 0 ? [staticSoapCard, ...dynamicCards] : [staticSoapCard, comingSoonCard];
+  return [staticSoapCard, ...dynamicCards];
 }
 
 export async function listAdminProducts() {
@@ -217,6 +221,7 @@ export async function createAdminProduct(input: ProductCreateInput) {
     galleryImages: input.galleryImages || [],
     ingredients: input.ingredients || [],
     benefits: input.benefits || [],
+    faqs: input.faqs || [],
     stock: input.stock ?? 0,
     category: input.category || "",
     isFeatured: input.isFeatured ?? false,
@@ -263,6 +268,7 @@ export async function updateAdminProduct(id: string, input: Partial<ProductCreat
   if (Array.isArray(input.galleryImages)) payload.galleryImages = input.galleryImages;
   if (Array.isArray(input.ingredients)) payload.ingredients = input.ingredients;
   if (Array.isArray(input.benefits)) payload.benefits = input.benefits;
+  if (Array.isArray(input.faqs)) payload.faqs = input.faqs;
   if (typeof input.stock === "number") payload.stock = input.stock;
   if (typeof input.category === "string") payload.category = input.category;
   if (typeof input.isFeatured === "boolean") payload.isFeatured = input.isFeatured;

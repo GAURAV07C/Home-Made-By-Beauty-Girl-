@@ -1,27 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-
-const faqItems = [
-  {
-    question: "Is this skincare range suitable for daily use?",
-    answer: "Yes. Our formulas are designed for regular use with a gentle, skin-friendly approach.",
-  },
-  {
-    question: "Which product is available right now?",
-    answer: "Currently Glow Soap is live. More products like cream and serum will be added soon.",
-  },
-  {
-    question: "Where can I buy the soap?",
-    answer: "You can directly shop from the Soap page and go to the Buy section.",
-  },
-  {
-    question: "Is this suitable for all skin types?",
-    answer: "The product is crafted to be balanced for most skin types, including daily-care routines.",
-  },
-];
+import { defaultFaqItems, type FaqItem } from "@/lib/default-faqs";
 
 export function GlobalFaqAccordion() {
+  const pathname = usePathname();
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(defaultFaqItems);
+
+  useEffect(() => {
+    const match = pathname.match(/^\/products\/([^/]+)$/);
+    if (!match) {
+      setFaqItems(defaultFaqItems);
+      return;
+    }
+
+    const slug = match[1];
+    fetch(`/api/products/${slug}`, { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        const productFaqs = Array.isArray(data?.product?.faqs) ? data.product.faqs : [];
+        const sanitized = productFaqs
+          .map((item: { question?: unknown; answer?: unknown }) => ({
+            question: String(item?.question || "").trim(),
+            answer: String(item?.answer || "").trim(),
+          }))
+          .filter((item: FaqItem) => item.question && item.answer);
+
+        setFaqItems(sanitized.length > 0 ? sanitized : defaultFaqItems);
+      })
+      .catch(() => setFaqItems(defaultFaqItems));
+  }, [pathname]);
+
   return (
     <section id="faq" className="bg-white py-14 sm:py-16">
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">

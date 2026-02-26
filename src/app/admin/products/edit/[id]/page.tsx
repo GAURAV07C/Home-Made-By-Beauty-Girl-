@@ -17,6 +17,33 @@ function linesToArray(value: string) {
     .filter(Boolean);
 }
 
+function faqArrayToBlocks(value: unknown) {
+  if (!Array.isArray(value)) return "";
+  return value
+    .map((item) => {
+      const question = String((item as { question?: unknown })?.question || "").trim();
+      const answer = String((item as { answer?: unknown })?.answer || "").trim();
+      if (!question || !answer) return "";
+      return `${question}\n${answer}`;
+    })
+    .filter(Boolean)
+    .join("\n\n");
+}
+
+function parseFaqBlocks(value: string) {
+  return value
+    .split(/\r?\n\s*\r?\n/g)
+    .map((block) => block.trim())
+    .filter(Boolean)
+    .map((block) => {
+      const lines = block.split(/\r?\n/g).map((line) => line.trim()).filter(Boolean);
+      const question = lines[0] || "";
+      const answer = lines.slice(1).join(" ");
+      return { question, answer };
+    })
+    .filter((item) => item.question && item.answer);
+}
+
 export default function AdminEditProductPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -50,6 +77,7 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
           isFeatured: Boolean(product.isFeatured),
           ingredients: arrayToLines(product.ingredients),
           benefits: arrayToLines(product.benefits),
+          faqs: faqArrayToBlocks(product.faqs),
           galleryImages: arrayToLines(product.galleryImages),
           buyLink: product.buyLink || "",
           amazonLink: product.amazonLink || "",
@@ -95,6 +123,7 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
         formData.set("isFeatured", String(nextValues.isFeatured));
         formData.set("ingredients", JSON.stringify(linesToArray(nextValues.ingredients)));
         formData.set("benefits", JSON.stringify(linesToArray(nextValues.benefits)));
+        formData.set("faqs", JSON.stringify(parseFaqBlocks(nextValues.faqs)));
         formData.set("galleryImages", JSON.stringify(linesToArray(nextValues.galleryImages)));
         formData.set("buyLink", nextValues.buyLink);
         formData.set("amazonLink", nextValues.amazonLink);
@@ -123,6 +152,7 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
             stock: Number(nextValues.stock || 0),
             ingredients: linesToArray(nextValues.ingredients),
             benefits: linesToArray(nextValues.benefits),
+            faqs: parseFaqBlocks(nextValues.faqs),
             galleryImages: linesToArray(nextValues.galleryImages),
             cardImage: nextValues.cardImage,
           }),
