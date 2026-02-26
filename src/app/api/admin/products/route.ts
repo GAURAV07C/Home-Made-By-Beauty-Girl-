@@ -15,20 +15,51 @@ export async function GET() {
   }
 }
 
+function parseListField(value: FormDataEntryValue | null): string[] {
+  if (!value) return [];
+  const raw = String(value).trim();
+  if (!raw) return [];
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed.map((item) => String(item || "").trim()).filter(Boolean);
+    }
+  } catch {
+    // Fall back to comma/newline split.
+  }
+
+  return raw
+    .split(/\r?\n|,/g)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 export async function POST(request: Request) {
   try {
     const form = await request.formData();
 
     const name = String(form.get("name") || "").trim();
-    const description = String(form.get("description") || "").trim();
-    const details = String(form.get("details") || "").trim();
+    const slug = String(form.get("slug") || "").trim();
+    const tagline = String(form.get("tagline") || "").trim();
+    const headline = String(form.get("headline") || "").trim();
+    const shortDescription = String(form.get("shortDescription") || "").trim();
+    const fullDescription = String(form.get("fullDescription") || "").trim();
     const price = String(form.get("price") || "").trim();
+    const comparePrice = String(form.get("comparePrice") || "").trim();
+    const category = String(form.get("category") || "").trim();
+    const stock = Number(String(form.get("stock") || "0").trim() || 0);
+    const isFeatured = String(form.get("isFeatured") || "false") === "true";
+    const ingredients = parseListField(form.get("ingredients"));
+    const benefits = parseListField(form.get("benefits"));
+    const galleryImages = parseListField(form.get("galleryImages"));
+    const buyLink = String(form.get("buyLink") || "").trim();
     const amazonLink = String(form.get("amazonLink") || "").trim();
     const flipkartLink = String(form.get("flipkartLink") || "").trim();
     const meeshoLink = String(form.get("meeshoLink") || "").trim();
     const imageFile = form.get("imageFile");
 
-    if (!name || !description || !details || !price || !imageFile || !(imageFile instanceof File)) {
+    if (!name || !shortDescription || !fullDescription || !price || !imageFile || !(imageFile instanceof File)) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
     }
 
@@ -45,11 +76,21 @@ export async function POST(request: Request) {
 
     const created = await createAdminProduct({
       name,
-      description,
-      details,
+      slug,
+      tagline,
+      headline,
+      shortDescription,
+      fullDescription,
       price,
-      image,
-      buyLink: amazonLink || flipkartLink || meeshoLink || "",
+      comparePrice,
+      mainImage: image,
+      galleryImages,
+      ingredients,
+      benefits,
+      stock: Number.isFinite(stock) ? stock : 0,
+      category,
+      isFeatured,
+      buyLink,
       amazonLink,
       flipkartLink,
       meeshoLink,

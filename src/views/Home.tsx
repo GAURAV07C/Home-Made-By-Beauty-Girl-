@@ -166,7 +166,7 @@ export default function Home() {
             >
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-emerald-500/10 to-primary/10 border border-primary/20 text-sm font-semibold text-primary">
                 <Gem className="w-4 h-4" />
-                Beauty Soap – Instant Glow Formula
+                Beauty Soap – Instant Glow Shop
               </span>
             </motion.div>
 

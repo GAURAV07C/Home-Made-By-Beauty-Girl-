@@ -4,29 +4,59 @@ import { ArrowRight, Check, Crown, Gem, Leaf, Shield, ShoppingCart, Sparkles, St
 
 export interface ProductTemplateData {
   name: string;
-  description: string;
-  details: string;
+  tagline: string;
+  headline: string;
+  shortDescription: string;
+  fullDescription: string;
   price: string;
-  image: string;
+  comparePrice?: string;
+  mainImage: string;
+  galleryImages?: string[];
+  ingredients?: string[];
+  benefits?: string[];
   amazonLink?: string;
   flipkartLink?: string;
   meeshoLink?: string;
 }
 
 export function ProductTemplate({ product }: { product: ProductTemplateData }) {
-  const featurePoints = [
-    "Deep cleansing without drying your skin",
-    "Instant brightness and natural radiance",
-    "Soft, supple skin texture from first use",
-    "Natural, soothing fragrance",
-  ];
+  const ingredients =
+    product.ingredients && product.ingredients.length > 0
+      ? product.ingredients
+      : ["Vitamin C", "Niacinamide", "Hyaluronic Acid", "Botanical Extract Blend"];
 
-  const ingredients = ["Vitamin C", "Niacinamide", "Hyaluronic Acid", "Botanical Extract Blend", product.name];
+  const featurePoints =
+    product.benefits && product.benefits.length > 0
+      ? product.benefits
+      : [
+          "Deep cleansing without drying your skin",
+          "Instant brightness and natural radiance",
+          "Soft, supple skin texture from first use",
+          "Natural, soothing fragrance",
+        ];
 
   const platforms = [
-    { label: "Amazon", href: product.amazonLink || "", color: "#FF9900" },
-    { label: "Flipkart", href: product.flipkartLink || "", color: "#2874F0" },
-    { label: "Meesho", href: product.meeshoLink || "", color: "#F43397" },
+    {
+      label: "Amazon",
+      href: product.amazonLink || "",
+      border: "hover:border-[#FF9900]/40",
+      iconBg: "bg-[#FF9900]/10",
+      iconColor: "text-[#FF9900]",
+    },
+    {
+      label: "Flipkart",
+      href: product.flipkartLink || "",
+      border: "hover:border-[#2874F0]/40",
+      iconBg: "bg-[#2874F0]/10",
+      iconColor: "text-[#2874F0]",
+    },
+    {
+      label: "Meesho",
+      href: product.meeshoLink || "",
+      border: "hover:border-[#F43397]/40",
+      iconBg: "bg-[#F43397]/10",
+      iconColor: "text-[#F43397]",
+    },
   ];
 
   return (
@@ -40,18 +70,24 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
         <div className="relative z-10 w-full lg:w-1/2 px-4 sm:px-6 lg:px-12 xl:px-20 py-8 lg:py-0 flex flex-col justify-center order-2 lg:order-1">
           <span className="inline-flex w-fit items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 via-emerald-500/10 to-primary/10 border border-primary/20 text-sm font-semibold text-primary">
             <Gem className="w-4 h-4" />
-            {product.name} Premium Formula
+            {product.tagline || `${product.name} Premium Formula`}
           </span>
 
           <h1 className="mt-6 font-display text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold leading-[1.15] text-foreground">
-            Discover{" "}
-            <span className="bg-gradient-to-r from-primary via-emerald-500 to-teal-500 bg-clip-text text-transparent">
-              {product.name}
-            </span>
+            {product.headline ? (
+              product.headline
+            ) : (
+              <>
+                Discover{" "}
+                <span className="bg-gradient-to-r from-primary via-emerald-500 to-teal-500 bg-clip-text text-transparent">
+                  {product.name}
+                </span>
+              </>
+            )}
           </h1>
 
-          <p className="mt-4 text-base sm:text-lg text-foreground/80 leading-relaxed max-w-xl">{product.description}</p>
-          <p className="mt-2 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">{product.details}</p>
+          <p className="mt-4 text-base sm:text-lg text-foreground/80 leading-relaxed max-w-xl">{product.shortDescription}</p>
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground leading-relaxed max-w-xl">{product.fullDescription}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
             {ingredients.map((ing, i) => (
@@ -94,7 +130,12 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
             </a>
           </div>
 
-          <div className="mt-6 text-2xl font-bold text-foreground">{product.price}</div>
+          <div className="mt-6 flex items-center gap-3">
+            <span className="text-2xl font-bold text-foreground">{product.price}</span>
+            {product.comparePrice ? (
+              <span className="text-lg text-muted-foreground line-through">{product.comparePrice}</span>
+            ) : null}
+          </div>
 
           <div className="flex items-center gap-4 mt-4">
             <div className="flex text-accent">
@@ -110,7 +151,7 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
 
         <div className="relative w-full lg:w-1/2 h-[45vh] sm:h-[55vh] lg:h-screen order-1 lg:order-2">
           <div className="relative h-full w-full overflow-hidden rounded-3xl border border-border/50 bg-white/70 shadow-2xl shadow-black/10">
-            <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+            <img src={product.mainImage} alt={product.name} className="h-full w-full object-cover" />
           </div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none opacity-[0.015]">
             <span className="font-display font-bold text-[18vw] sm:text-[14vw] leading-none whitespace-nowrap bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
@@ -132,9 +173,6 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
                 Premium Ingredients
               </span>
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base lg:text-lg">
-              Carefully selected ingredients crafted for visible, healthy glow.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
@@ -158,7 +196,7 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             <div className="w-full lg:w-1/2 relative">
               <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl relative">
-                <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                <img src={product.mainImage} alt={product.name} className="h-full w-full object-cover" />
               </div>
             </div>
 
@@ -173,7 +211,7 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
                   {product.name}
                 </span>
               </h2>
-              <p className="text-muted-foreground text-base sm:text-lg mb-8 leading-relaxed">{product.details}</p>
+              <p className="text-muted-foreground text-base sm:text-lg mb-8 leading-relaxed">{product.fullDescription}</p>
 
               <ul className="space-y-5 mb-10">
                 {featurePoints.map((text, i) => (
@@ -215,14 +253,11 @@ export function ProductTemplate({ product }: { product: ProductTemplateData }) {
                 target={platform.href ? "_blank" : undefined}
                 rel={platform.href ? "noreferrer" : undefined}
                 className={`relative group flex flex-col items-center gap-5 p-8 sm:p-10 rounded-3xl bg-white border-2 border-border/50 shadow-xl transition-all overflow-hidden ${
-                  platform.href ? "hover:shadow-2xl" : "opacity-50 pointer-events-none"
+                  platform.href ? `hover:shadow-2xl ${platform.border}` : "opacity-50 pointer-events-none"
                 }`}
               >
-                <div
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg"
-                  style={{ background: `${platform.color}20` }}
-                >
-                  <ShoppingCart className="w-10 h-10 sm:w-12 sm:h-12" style={{ color: platform.color }} />
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl ${platform.iconBg} flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
+                  <ShoppingCart className={`w-10 h-10 sm:w-12 sm:h-12 ${platform.iconColor}`} />
                 </div>
                 <span className="font-bold text-foreground text-lg relative z-10">{platform.label}</span>
               </a>

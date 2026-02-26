@@ -37,7 +37,7 @@ export function SiteNavigation() {
           <Link href="/soap" className="text-sm font-medium text-foreground/75 hover:text-primary">
             Soap
           </Link>
-          <Link href="/admin" className="text-sm font-medium text-foreground/75 hover:text-primary">
+          <Link href="/admin/products" className="text-sm font-medium text-foreground/75 hover:text-primary">
             Admin
           </Link>
           <Link href="/soap#buy" className="text-sm font-medium text-foreground/75 hover:text-primary">

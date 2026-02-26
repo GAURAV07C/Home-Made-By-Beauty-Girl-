@@ -7,6 +7,7 @@ import type { HomeCardProduct } from "@/lib/product-types";
 const fallbackCategories: HomeCardProduct[] = [
   {
     id: "soap",
+    slug: "soap",
     title: "Glow Soap",
     description: "Our active signature cleanser for daily glow, smooth texture, and gentle skin comfort.",
     imageSrc: "/soap.png",
@@ -41,7 +42,7 @@ export function ProductCategorySection() {
           <h2 className="mt-3 font-display text-3xl font-bold text-foreground sm:text-4xl">Our Products</h2>
         </div>
 
-        <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-6">
+        <div className="mx-auto mt-10 grid max-w-6xl grid-cols-1 gap-6 md:grid-cols-2">
           {categories.map((category) => (
             <ProductCard key={category.id} {...category} />
           ))}
