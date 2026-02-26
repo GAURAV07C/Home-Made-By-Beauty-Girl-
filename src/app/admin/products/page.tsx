@@ -24,6 +24,10 @@ export default function AdminProductsPage() {
     setMessage("");
     try {
       const response = await fetch("/api/admin/products", { cache: "no-store" });
+      if (response.status === 401) {
+        window.location.href = "/admin/login";
+        return;
+      }
       const data = await response.json();
       setProducts(Array.isArray(data.products) ? data.products : []);
     } catch {
@@ -49,6 +53,11 @@ export default function AdminProductsPage() {
     await loadProducts();
   }
 
+  async function handleLogout() {
+    await fetch("/api/admin/logout", { method: "POST" });
+    window.location.href = "/admin/login";
+  }
+
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -57,12 +66,21 @@ export default function AdminProductsPage() {
           <h1 className="mt-2 font-display text-4xl font-bold text-foreground">Products</h1>
           <p className="mt-2 text-foreground/75">Yahan se create, edit, delete sab manage hoga.</p>
         </div>
-        <Link
-          href="/admin/products/create"
-          className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary/25"
-        >
-          Create Product
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="inline-flex items-center justify-center rounded-2xl border border-border px-5 py-3 font-semibold text-foreground"
+          >
+            Logout
+          </button>
+          <Link
+            href="/admin/products/create"
+            className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-primary to-emerald-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary/25"
+          >
+            Create Product
+          </Link>
+        </div>
       </div>
 
       {message ? <p className="mb-4 text-sm text-red-600">{message}</p> : null}

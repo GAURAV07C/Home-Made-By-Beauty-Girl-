@@ -27,11 +27,6 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link href="/admin/products" className="hover:text-primary">
-                Admin
-              </Link>
-            </li>
-            <li>
               <Link href="/soap#buy" className="hover:text-primary">
                 Buy Now
               </Link>

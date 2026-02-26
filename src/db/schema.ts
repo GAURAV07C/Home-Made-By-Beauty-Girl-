@@ -4,6 +4,10 @@ export const products = pgTable("products", {
   id: text("id").primaryKey(),
   slug: text("slug").notNull(),
   name: text("name").notNull(),
+  // Legacy columns kept for backward compatibility with existing DB constraints.
+  description: text("description").notNull().default(""),
+  details: text("details").notNull().default(""),
+  image: text("image").notNull().default(""),
   tagline: text("tagline").notNull().default(""),
   headline: text("headline").notNull().default(""),
   shortDescription: text("short_description").notNull(),
@@ -11,6 +15,7 @@ export const products = pgTable("products", {
   price: text("price").notNull(),
   comparePrice: text("compare_price").notNull().default(""),
   mainImage: text("main_image").notNull(),
+  cardImage: text("card_image").notNull().default(""),
   galleryImages: jsonb("gallery_images").$type<string[]>().notNull().default([]),
   ingredients: jsonb("ingredients").$type<string[]>().notNull().default([]),
   benefits: jsonb("benefits").$type<string[]>().notNull().default([]),

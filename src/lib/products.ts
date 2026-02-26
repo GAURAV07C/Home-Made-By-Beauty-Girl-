@@ -14,6 +14,7 @@ export interface ProductDetailData {
   price: string;
   comparePrice: string;
   mainImage: string;
+  cardImage: string;
   galleryImages: string[];
   ingredients: string[];
   benefits: string[];
@@ -38,6 +39,7 @@ export interface ProductCreateInput {
   price: string;
   comparePrice?: string;
   mainImage: string;
+  cardImage?: string;
   galleryImages?: string[];
   ingredients?: string[];
   benefits?: string[];
@@ -106,6 +108,7 @@ function mapRowToDetail(row: ProductRow): ProductDetailData {
     price: row.price,
     comparePrice: row.comparePrice,
     mainImage: row.mainImage,
+    cardImage: row.cardImage || row.mainImage,
     galleryImages: toStringArray(row.galleryImages),
     ingredients: toStringArray(row.ingredients),
     benefits: toStringArray(row.benefits),
@@ -159,7 +162,7 @@ export async function listDynamicProductCards(): Promise<HomeCardProduct[]> {
     description: row.shortDescription,
     category: row.category,
     price: row.price,
-    imageSrc: row.mainImage,
+    imageSrc: row.cardImage || row.mainImage,
     imageAlt: `${row.name} image`,
     buyHref: `/products/${row.slug}#buy`,
     detailsHref: `/products/${row.slug}`,
@@ -199,6 +202,10 @@ export async function createAdminProduct(input: ProductCreateInput) {
     id: makeId(input.name),
     slug: uniqueSlug,
     name: input.name,
+    // Keep legacy columns in sync for databases that still enforce NOT NULL on them.
+    description: input.shortDescription,
+    details: input.fullDescription,
+    image: input.mainImage,
     tagline: input.tagline,
     headline: input.headline,
     shortDescription: input.shortDescription,
@@ -206,6 +213,7 @@ export async function createAdminProduct(input: ProductCreateInput) {
     price: input.price,
     comparePrice: input.comparePrice || "",
     mainImage: input.mainImage,
+    cardImage: input.cardImage || input.mainImage,
     galleryImages: input.galleryImages || [],
     ingredients: input.ingredients || [],
     benefits: input.benefits || [],
@@ -234,11 +242,24 @@ export async function updateAdminProduct(id: string, input: Partial<ProductCreat
   if (typeof input.name === "string") payload.name = input.name;
   if (typeof input.tagline === "string") payload.tagline = input.tagline;
   if (typeof input.headline === "string") payload.headline = input.headline;
-  if (typeof input.shortDescription === "string") payload.shortDescription = input.shortDescription;
-  if (typeof input.fullDescription === "string") payload.fullDescription = input.fullDescription;
+  if (typeof input.shortDescription === "string") {
+    payload.shortDescription = input.shortDescription;
+    payload.description = input.shortDescription;
+  }
+  if (typeof input.fullDescription === "string") {
+    payload.fullDescription = input.fullDescription;
+    payload.details = input.fullDescription;
+  }
   if (typeof input.price === "string") payload.price = input.price;
   if (typeof input.comparePrice === "string") payload.comparePrice = input.comparePrice;
-  if (typeof input.mainImage === "string") payload.mainImage = input.mainImage;
+  if (typeof input.mainImage === "string") {
+    payload.mainImage = input.mainImage;
+    payload.image = input.mainImage;
+    if (typeof input.cardImage !== "string") {
+      payload.cardImage = input.mainImage;
+    }
+  }
+  if (typeof input.cardImage === "string") payload.cardImage = input.cardImage;
   if (Array.isArray(input.galleryImages)) payload.galleryImages = input.galleryImages;
   if (Array.isArray(input.ingredients)) payload.ingredients = input.ingredients;
   if (Array.isArray(input.benefits)) payload.benefits = input.benefits;

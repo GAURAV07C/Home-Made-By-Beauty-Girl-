@@ -57,7 +57,9 @@ export async function POST(request: Request) {
     const amazonLink = String(form.get("amazonLink") || "").trim();
     const flipkartLink = String(form.get("flipkartLink") || "").trim();
     const meeshoLink = String(form.get("meeshoLink") || "").trim();
+    const cardImage = String(form.get("cardImage") || "").trim();
     const imageFile = form.get("imageFile");
+    const cardImageFile = form.get("cardImageFile");
 
     if (!name || !shortDescription || !fullDescription || !price || !imageFile || !(imageFile instanceof File)) {
       return NextResponse.json({ message: "All fields are required" }, { status: 400 });
@@ -74,6 +76,16 @@ export async function POST(request: Request) {
     await writeFile(filePath, bytes);
     const image = `/uploads/${fileName}`;
 
+    let resolvedCardImage = cardImage || image;
+    if (cardImageFile && cardImageFile instanceof File) {
+      const cardExt = path.extname(cardImageFile.name || ".png").toLowerCase() || ".png";
+      const cardFileName = `${safeName}-card-${Date.now()}${cardExt}`;
+      const cardFilePath = path.join(uploadDir, cardFileName);
+      const cardBytes = Buffer.from(await cardImageFile.arrayBuffer());
+      await writeFile(cardFilePath, cardBytes);
+      resolvedCardImage = `/uploads/${cardFileName}`;
+    }
+
     const created = await createAdminProduct({
       name,
       slug,
@@ -84,6 +96,7 @@ export async function POST(request: Request) {
       price,
       comparePrice,
       mainImage: image,
+      cardImage: resolvedCardImage,
       galleryImages,
       ingredients,
       benefits,

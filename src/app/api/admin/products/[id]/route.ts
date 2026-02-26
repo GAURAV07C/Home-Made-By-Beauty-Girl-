@@ -27,6 +27,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (isMultipart) {
       const form = await request.formData();
       const imageFile = form.get("imageFile");
+      const cardImageFile = form.get("cardImageFile");
 
       payload.name = String(form.get("name") || "").trim();
       payload.slug = String(form.get("slug") || "").trim();
@@ -37,6 +38,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       payload.price = String(form.get("price") || "").trim();
       payload.comparePrice = String(form.get("comparePrice") || "").trim();
       payload.mainImage = String(form.get("mainImage") || "").trim();
+      payload.cardImage = String(form.get("cardImage") || "").trim();
       payload.stock = Number(String(form.get("stock") || "0").trim() || 0);
       payload.category = String(form.get("category") || "").trim();
       payload.isFeatured = String(form.get("isFeatured") || "false") === "true";
@@ -74,6 +76,25 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         await writeFile(filePath, bytes);
         payload.mainImage = `/uploads/${fileName}`;
       }
+
+      if (cardImageFile && cardImageFile instanceof File) {
+        const cardExt = path.extname(cardImageFile.name || ".png").toLowerCase() || ".png";
+        const safeName = String(payload.name || "product")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+        const cardFileName = `${safeName}-card-${Date.now()}${cardExt}`;
+        const uploadDir = path.join(process.cwd(), "public", "uploads");
+        await mkdir(uploadDir, { recursive: true });
+        const cardFilePath = path.join(uploadDir, cardFileName);
+        const cardBytes = Buffer.from(await cardImageFile.arrayBuffer());
+        await writeFile(cardFilePath, cardBytes);
+        payload.cardImage = `/uploads/${cardFileName}`;
+      }
+
+      if (!String(payload.cardImage || "").trim()) {
+        payload.cardImage = String(payload.mainImage || "").trim();
+      }
     } else {
       const body = await request.json();
       payload.name = String(body.name || "").trim();
@@ -85,6 +106,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       payload.price = String(body.price || "").trim();
       payload.comparePrice = String(body.comparePrice || "").trim();
       payload.mainImage = String(body.mainImage || "").trim();
+      payload.cardImage = String(body.cardImage || "").trim();
       payload.galleryImages = Array.isArray(body.galleryImages)
         ? body.galleryImages.map((item: unknown) => String(item || "").trim()).filter(Boolean)
         : [];
@@ -101,6 +123,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       payload.amazonLink = String(body.amazonLink || "").trim();
       payload.flipkartLink = String(body.flipkartLink || "").trim();
       payload.meeshoLink = String(body.meeshoLink || "").trim();
+      if (!String(payload.cardImage || "").trim()) {
+        payload.cardImage = payload.mainImage;
+      }
     }
 
     if (

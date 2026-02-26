@@ -22,6 +22,7 @@ export interface AdminProductFormValues {
   flipkartLink: string;
   meeshoLink: string;
   mainImage: string;
+  cardImage: string;
 }
 
 export const emptyAdminProductForm: AdminProductFormValues = {
@@ -44,13 +45,14 @@ export const emptyAdminProductForm: AdminProductFormValues = {
   flipkartLink: "",
   meeshoLink: "",
   mainImage: "",
+  cardImage: "",
 };
 
 interface ProductFormProps {
   mode: "create" | "edit";
   initialValues?: AdminProductFormValues;
   loading?: boolean;
-  onSubmit: (payload: { values: AdminProductFormValues; imageFile: File | null }) => Promise<void>;
+  onSubmit: (payload: { values: AdminProductFormValues; imageFile: File | null; cardImageFile: File | null }) => Promise<void>;
   submitLabel: string;
 }
 
@@ -84,12 +86,18 @@ function Input({
 export function ProductForm({ mode, initialValues, loading = false, onSubmit, submitLabel }: ProductFormProps) {
   const [values, setValues] = useState<AdminProductFormValues>(initialValues || emptyAdminProductForm);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [cardImageFile, setCardImageFile] = useState<File | null>(null);
   const [error, setError] = useState("");
 
   const previewImage = useMemo(() => {
     if (imageFile) return URL.createObjectURL(imageFile);
     return values.mainImage || "/soap.png";
   }, [imageFile, values.mainImage]);
+
+  const cardPreviewImage = useMemo(() => {
+    if (cardImageFile) return URL.createObjectURL(cardImageFile);
+    return values.cardImage || values.mainImage || "/soap.png";
+  }, [cardImageFile, values.cardImage, values.mainImage]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +113,7 @@ export function ProductForm({ mode, initialValues, loading = false, onSubmit, su
       return;
     }
 
-    await onSubmit({ values, imageFile });
+    await onSubmit({ values, imageFile, cardImageFile });
   }
 
   return (
@@ -197,11 +205,18 @@ export function ProductForm({ mode, initialValues, loading = false, onSubmit, su
         </div>
 
         {mode === "edit" ? (
-          <Input
-            label="Main Image Path (e.g. /uploads/file.png)"
-            value={values.mainImage}
-            onChange={(v) => setValues((s) => ({ ...s, mainImage: v }))}
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Main Image Path (e.g. /uploads/file.png)"
+              value={values.mainImage}
+              onChange={(v) => setValues((s) => ({ ...s, mainImage: v }))}
+            />
+            <Input
+              label="Card Image Path (e.g. /uploads/file.png)"
+              value={values.cardImage}
+              onChange={(v) => setValues((s) => ({ ...s, cardImage: v }))}
+            />
+          </div>
         ) : null}
 
         <label className="block">
@@ -210,6 +225,16 @@ export function ProductForm({ mode, initialValues, loading = false, onSubmit, su
             type="file"
             accept="image/*"
             onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+            className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground"
+          />
+        </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-semibold text-foreground">Upload Card Image (optional)</span>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setCardImageFile(e.target.files?.[0] || null)}
             className="w-full rounded-xl border border-border bg-white px-4 py-3 text-sm text-foreground"
           />
         </label>
@@ -228,6 +253,7 @@ export function ProductForm({ mode, initialValues, loading = false, onSubmit, su
       <aside className="rounded-2xl border border-border/70 bg-white p-4 sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">Live Preview</p>
         <img src={previewImage} alt="preview" className="mt-4 aspect-[4/5] w-full rounded-xl object-cover" />
+        <img src={cardPreviewImage} alt="card preview" className="mt-4 aspect-[5/4] w-full rounded-xl object-cover" />
         <h3 className="mt-4 font-display text-2xl font-bold text-foreground">{values.name || "Product Name"}</h3>
         <p className="mt-2 text-sm text-foreground/70">{values.shortDescription || "Short description preview"}</p>
         <p className="mt-3 text-lg font-semibold text-foreground">{values.price || "Rs. 0"}</p>

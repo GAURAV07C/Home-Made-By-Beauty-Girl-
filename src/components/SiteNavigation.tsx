@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ShoppingBag } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export function SiteNavigation() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0);
@@ -14,6 +16,10 @@ export function SiteNavigation() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const isProductDetail = pathname.startsWith("/products/") || pathname === "/soap";
+  const buyHref = pathname === "/" ? "#products" : isProductDetail ? "#buy" : "/#products";
+  const buyLabel = pathname === "/" ? "Shop Products" : "Buy Now";
 
   return (
     <header
@@ -37,20 +43,17 @@ export function SiteNavigation() {
           <Link href="/soap" className="text-sm font-medium text-foreground/75 hover:text-primary">
             Soap
           </Link>
-          <Link href="/admin/products" className="text-sm font-medium text-foreground/75 hover:text-primary">
-            Admin
-          </Link>
-          <Link href="/soap#buy" className="text-sm font-medium text-foreground/75 hover:text-primary">
+          <Link href={buyHref} className="text-sm font-medium text-foreground/75 hover:text-primary">
             Buy Now
           </Link>
         </nav>
 
         <Link
-          href="/soap#buy"
+          href={buyHref}
           className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-emerald-600 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-primary/20"
         >
           <ShoppingBag className="h-4 w-4" />
-          <span>Buy Soap</span>
+          <span>{buyLabel}</span>
         </Link>
       </div>
     </header>

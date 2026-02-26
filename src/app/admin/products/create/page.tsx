@@ -17,7 +17,15 @@ export default function AdminCreateProductPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  async function onSubmit({ values, imageFile }: { values: AdminProductFormValues; imageFile: File | null }) {
+  async function onSubmit({
+    values,
+    imageFile,
+    cardImageFile,
+  }: {
+    values: AdminProductFormValues;
+    imageFile: File | null;
+    cardImageFile: File | null;
+  }) {
     setLoading(true);
     setMessage("");
 
@@ -41,7 +49,9 @@ export default function AdminCreateProductPage() {
       formData.set("amazonLink", values.amazonLink);
       formData.set("flipkartLink", values.flipkartLink);
       formData.set("meeshoLink", values.meeshoLink);
+      formData.set("cardImage", values.cardImage);
       if (imageFile) formData.set("imageFile", imageFile);
+      if (cardImageFile) formData.set("cardImageFile", cardImageFile);
 
       const response = await fetch("/api/admin/products", {
         method: "POST",

@@ -56,6 +56,7 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
           flipkartLink: product.flipkartLink || "",
           meeshoLink: product.meeshoLink || "",
           mainImage: product.mainImage || "",
+          cardImage: product.cardImage || product.mainImage || "",
         });
       } catch {
         setMessage("Product load failed");
@@ -67,11 +68,19 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
     load().catch(() => setMessage("Product load failed"));
   }, [params.id]);
 
-  async function onSubmit({ values: nextValues, imageFile }: { values: AdminProductFormValues; imageFile: File | null }) {
+  async function onSubmit({
+    values: nextValues,
+    imageFile,
+    cardImageFile,
+  }: {
+    values: AdminProductFormValues;
+    imageFile: File | null;
+    cardImageFile: File | null;
+  }) {
     setLoading(true);
     setMessage("");
     try {
-      if (imageFile) {
+      if (imageFile || cardImageFile) {
         const formData = new FormData();
         formData.set("name", nextValues.name);
         formData.set("slug", nextValues.slug);
@@ -92,7 +101,9 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
         formData.set("flipkartLink", nextValues.flipkartLink);
         formData.set("meeshoLink", nextValues.meeshoLink);
         formData.set("mainImage", nextValues.mainImage);
-        formData.set("imageFile", imageFile);
+        formData.set("cardImage", nextValues.cardImage);
+        if (imageFile) formData.set("imageFile", imageFile);
+        if (cardImageFile) formData.set("cardImageFile", cardImageFile);
 
         const response = await fetch(`/api/admin/products/${params.id}`, {
           method: "PUT",
@@ -113,6 +124,7 @@ export default function AdminEditProductPage({ params }: { params: { id: string 
             ingredients: linesToArray(nextValues.ingredients),
             benefits: linesToArray(nextValues.benefits),
             galleryImages: linesToArray(nextValues.galleryImages),
+            cardImage: nextValues.cardImage,
           }),
         });
         const data = await response.json();

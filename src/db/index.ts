@@ -41,6 +41,7 @@ export async function ensureProductsTable() {
       price text NOT NULL,
       compare_price text NOT NULL DEFAULT '',
       main_image text NOT NULL DEFAULT '',
+      card_image text NOT NULL DEFAULT '',
       gallery_images jsonb NOT NULL DEFAULT '[]'::jsonb,
       ingredients jsonb NOT NULL DEFAULT '[]'::jsonb,
       benefits jsonb NOT NULL DEFAULT '[]'::jsonb,
@@ -107,6 +108,10 @@ export async function ensureProductsTable() {
   END $$;`);
   await db.execute(sql`ALTER TABLE products ALTER COLUMN main_image SET NOT NULL;`);
   await db.execute(sql`ALTER TABLE products ALTER COLUMN main_image SET DEFAULT '';`);
+  await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS card_image text;`);
+  await db.execute(sql`UPDATE products SET card_image = COALESCE(NULLIF(card_image, ''), main_image, '') WHERE card_image IS NULL OR card_image = '';`);
+  await db.execute(sql`ALTER TABLE products ALTER COLUMN card_image SET NOT NULL;`);
+  await db.execute(sql`ALTER TABLE products ALTER COLUMN card_image SET DEFAULT '';`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS gallery_images jsonb NOT NULL DEFAULT '[]'::jsonb;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS ingredients jsonb NOT NULL DEFAULT '[]'::jsonb;`);
   await db.execute(sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS benefits jsonb NOT NULL DEFAULT '[]'::jsonb;`);
