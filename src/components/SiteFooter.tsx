@@ -27,6 +27,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link href="/admin" className="hover:text-primary">
+                Admin
+              </Link>
+            </li>
+            <li>
               <Link href="/soap#buy" className="hover:text-primary">
                 Buy Now
               </Link>
@@ -51,13 +56,13 @@ export function SiteFooter() {
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">Social</h3>
           <div className="mt-4 flex items-center gap-3">
-            <a href="#" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="Instagram">
+            <a href="https://www.instagram.com" target="_blank" rel="noreferrer" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="Instagram">
               <Instagram className="h-4 w-4" />
             </a>
-            <a href="#" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="Facebook">
+            <a href="https://www.facebook.com" target="_blank" rel="noreferrer" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="Facebook">
               <Facebook className="h-4 w-4" />
             </a>
-            <a href="#" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="YouTube">
+            <a href="https://www.youtube.com" target="_blank" rel="noreferrer" className="rounded-full border border-border p-2 text-foreground/75 hover:text-primary" aria-label="YouTube">
               <Youtube className="h-4 w-4" />
             </a>
           </div>

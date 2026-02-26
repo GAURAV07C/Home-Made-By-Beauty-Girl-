@@ -1,17 +1,38 @@
-import { ProductCard } from "@/components/home/ProductCard";
+"use client";
 
-const categories = [
+import { useEffect, useState } from "react";
+import { ProductCard } from "@/components/home/ProductCard";
+import type { HomeCardProduct } from "@/lib/product-types";
+
+const fallbackCategories: HomeCardProduct[] = [
   {
+    id: "soap",
     title: "Glow Soap",
     description: "Our active signature cleanser for daily glow, smooth texture, and gentle skin comfort.",
     imageSrc: "/soap.png",
     imageAlt: "Glow Soap product image",
     buyHref: "/soap#buy",
     detailsHref: "/soap",
+    isStaticSoap: true,
   },
 ];
 
 export function ProductCategorySection() {
+  const [categories, setCategories] = useState<HomeCardProduct[]>(fallbackCategories);
+
+  useEffect(() => {
+    fetch("/api/products", { cache: "no-store" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data.products) && data.products.length > 0) {
+          setCategories(data.products);
+        }
+      })
+      .catch(() => {
+        // Keep fallback soap card.
+      });
+  }, []);
+
   return (
     <section id="products" className="bg-white py-16 sm:py-20 lg:py-24">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -22,7 +43,7 @@ export function ProductCategorySection() {
 
         <div className="mx-auto mt-10 grid max-w-3xl grid-cols-1 gap-6">
           {categories.map((category) => (
-            <ProductCard key={category.title} {...category} />
+            <ProductCard key={category.id} {...category} />
           ))}
         </div>
       </div>

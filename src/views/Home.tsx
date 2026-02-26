@@ -518,7 +518,9 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 max-w-3xl mx-auto">
               {/* Amazon */}
               <motion.a
-                href="#"
+                href="https://www.amazon.in"
+                target="_blank"
+                rel="noreferrer"
                 whileHover={{ y: -12, scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 className="relative group flex flex-col items-center gap-5 p-8 sm:p-10 rounded-3xl bg-white border-2 border-border/50 shadow-xl hover:shadow-2xl hover:border-[#FF9900]/40 transition-all overflow-hidden"
@@ -533,7 +535,9 @@ export default function Home() {
               
               {/* Flipkart */}
               <motion.a
-                href="#"
+                href="https://www.flipkart.com"
+                target="_blank"
+                rel="noreferrer"
                 whileHover={{ y: -12, scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 className="relative group flex flex-col items-center gap-5 p-8 sm:p-10 rounded-3xl bg-white border-2 border-border/50 shadow-xl hover:shadow-2xl hover:border-[#2874F0]/40 transition-all overflow-hidden"
@@ -548,7 +552,9 @@ export default function Home() {
               
               {/* Meesho */}
               <motion.a
-                href="#"
+                href="https://www.meesho.com"
+                target="_blank"
+                rel="noreferrer"
                 whileHover={{ y: -12, scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 className="relative group flex flex-col items-center gap-5 p-8 sm:p-10 rounded-3xl bg-white border-2 border-border/50 shadow-xl hover:shadow-2xl hover:border-[#F43397]/40 transition-all overflow-hidden"
